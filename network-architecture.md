@@ -2,7 +2,7 @@
 
 A segmented, monitored home network I run as a hands-on learning environment. The internet feed is inspected inline before it reaches the gateway, traffic is split across isolated VLANs with a default-deny firewall between them, and the network is monitored by a SIEM.
 
-> Personal device names and other people's names are redacted in the screenshots below, IP addresses are blanked after the first two octets, and SSID names are removed.
+> In the screenshots below, IP addresses are blanked after the first two octets and SSID names are removed.
 
 ## The hardware
 
@@ -65,7 +65,7 @@ The VLANs and per-network DHCP, with IP ranges and SSID names redacted:
 <img src="net-wifi-vlans.png" alt="UniFi WiFi and VLAN configuration, redacted" width="820">
 </div>
 
-The zone-to-zone firewall policy matrix (Riley redacted, my own zone kept):
+The zone-to-zone firewall policy matrix:
 
 <div align="center">
 <img src="net-firewall-zones.png" alt="UniFi firewall zone matrix, redacted" width="900">
