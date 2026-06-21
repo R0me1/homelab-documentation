@@ -15,6 +15,9 @@ Documentation from my self-built home lab, which I use to practise IT support an
 ### 🌐 [Home Network & Security Architecture](network-architecture.md)
 A segmented, monitored home network with inline Suricata IPS ahead of the gateway, forced recursive DNS on every VLAN, a zone-based default-deny firewall, and a Security Onion SIEM. Includes the full hardware inventory and a network diagram.
 
+### 🔍 [Investigation, Catching Devices That Bypass My DNS](dns-bypass-investigation.md)
+DNS query logs turned up a smart TV phoning home every few minutes and a streaming box ignoring the local resolver entirely with hardcoded public DNS. Tracing how devices slipped past my DNS, fixing a resolver SERVFAIL it surfaced, and forcing every device back through the local resolver so logging and blocking actually hold.
+
 ### 🖥️ [Active Directory Lab, Tiered "Fakelab Inc." Domain](active-directory-lab.md)
 A Windows Server 2025 domain built on Microsoft's tiered administration model and provisioned by an idempotent PowerShell script. Realistic Level 1 to 3 helpdesk practice, NTFS-permissioned file shares, mapped to NIST guidance.
 
