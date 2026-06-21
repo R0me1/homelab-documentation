@@ -24,31 +24,10 @@ During a heatwave the SIEM's SSD twice hit critical temperature and dropped offl
 
 ## Network architecture
 
-```mermaid
-flowchart TD
-    INET([Internet / ISP<br/>modem in bridge mode])
-    IPS["Edge IPS bridge<br/>Suricata in IPS mode<br/>+ recursive DNS + NTP"]
-    GW["Gateway / Firewall<br/>zone-based, default-deny"]
-    SW["2.5G PoE switch"]
-
-    INET --> IPS --> GW --> SW
-
-    SW --> SRV["Servers VLAN<br/>Proxmox: DC, File server, Authentik"]
-    SW --> SIEM["Monitoring VLAN<br/>Security Onion SIEM"]
-    SW --> NAS["Storage<br/>TrueNAS, Nextcloud, Immich"]
-    SW --> WS["Trusted workstation VLAN"]
-    SW --> AP["Wi-Fi access point"]
-
-    AP --> MOB["Mobile devices VLAN"]
-    AP --> IOT["IoT VLAN<br/>isolated"]
-    AP --> CAM["Smart-camera VLAN<br/>isolated"]
-    AP --> GUEST["Guest / other VLANs"]
-```
-
-The same setup in the UniFi console (consumer leaf devices cropped out):
+The network topology in the UniFi console:
 
 <div align="center">
-<img src="net-topology.png" alt="UniFi network topology" width="720">
+<img src="net-topology.png" alt="UniFi network topology" width="860">
 </div>
 
 ## Design notes
