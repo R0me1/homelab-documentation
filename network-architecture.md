@@ -40,7 +40,7 @@ The network topology in the UniFi console:
 
 **Inline IPS ahead of the gateway.** The ISP modem runs in bridge mode and passes traffic to a bare-metal OPNsense box configured as a transparent bridge. Suricata inspects that traffic in IPS mode and can drop malicious packets before they reach the gateway, rather than only detecting them after the fact.
 
-**Controlled DNS everywhere.** A local Unbound resolver performs full recursive DNS. DNS is forced network-wide with a NAT redirect on every VLAN, including the VPN VLAN, so no device can quietly use its own resolver. This stops DNS being used to bypass filtering or to exfiltrate data.
+**Controlled DNS everywhere.** A local Unbound resolver performs full recursive DNS for every query on the network. DNS is forced with a NAT redirect on every VLAN, including the VPN VLAN, so every device uses the local resolver whether it wants to or not. Some devices ship with hardcoded encrypted DNS that tries to bypass a local resolver, so I close those routes too: DNS-over-TLS is blocked on port 853, and DNS-over-HTTPS is blocked by dropping traffic to known DoH endpoints using the Hagezi DoH IP blocklist, which is the encrypted bypass route over 443. A device that tries to bypass is transparently redirected back to my resolver without anything changing on its end. The result is that only permitted names resolve, DNS blocklists are actually enforced, and the DNS logs are complete because nothing slips past. I added this after an investigation showed some devices were quietly bypassing my DNS, which is how I came to learn about NAT redirect and implement it in the first place.
 
 **Segmentation and default-deny firewall.** Traffic is split across purpose-built VLANs (servers, monitoring, trusted users, mobile, IoT, smart cameras, guest). A zone-based firewall enforces least privilege between zones: the default is block, and only the specific flows that need to exist are allowed. IoT and camera devices are isolated so a compromised device cannot reach the rest of the network.
 
@@ -54,6 +54,12 @@ The zone-to-zone firewall policy matrix:
 
 <div align="center">
 <img src="net-firewall-zones.png" alt="UniFi firewall zone matrix, redacted" width="900">
+</div>
+
+**Least privilege, enforced per service.** Because the firewall is deny-by-default, nothing is allowed until I explicitly permit it. Rather than open broad ranges, I build a named port group for each service containing only the ports it actually needs, then write a rule scoped to that group, so every allow rule is the minimum access necessary. The network lists below are those port groups: standard service ports, named by purpose.
+
+<div align="center">
+<img src="net-firewall-portgroups.png" alt="UniFi network lists and per-service port groups, redacted" width="900">
 </div>
 
 **Monitoring.** A Security Onion SIEM collects logs and gives visibility into activity across the network.

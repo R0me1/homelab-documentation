@@ -18,6 +18,8 @@ Two reasons. Data ownership: my files and photos live on hardware I control, not
 
 Rather than port-forwarding each service to the open internet, which would mean an exposed login page for every app and a constant stream of automated attacks against it, none of these services are publicly reachable. Instead I connect into my home network through an encrypted WireGuard tunnel and reach everything internally, as if I were sitting at home. That keeps the attack surface down to a single hardened entry point instead of many exposed services. It is the same approach a corporate VPN takes, run at home.
 
+I originally used Tailscale for remote access, but moved to self-hosted WireGuard to keep a third party out of the trust path entirely. Access is also scoped per service rather than all-or-nothing: Jellyfin, my media server, is shared with family, while Immich, Navidrome and Nextcloud stay private to me.
+
 ## Infrastructure
 
 These run on a homelab built around:
