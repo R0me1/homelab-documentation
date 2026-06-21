@@ -22,6 +22,12 @@ A segmented, monitored home network I run as a hands-on learning environment. Th
 
 During a heatwave the SIEM's SSD twice hit critical temperature and dropped offline. I traced it to a thermal problem and fitted a temperature-triggered 120 mm fan that spins up above a set threshold. No dropouts since. (Full writeup: [Thermal NVMe Failure on a Home SIEM](siem-thermal-incident.md).)
 
+Patch cables are labelled at the switch for quick tracing:
+
+<div align="center">
+<img src="net-cable-labels.jpg" alt="Labelled patch cables at the switch" width="300">
+</div>
+
 ## Network architecture
 
 The network topology in the UniFi console:
