@@ -1,6 +1,6 @@
 # Active Directory Lab: Tiered "Fakelab Inc." Domain
 
-A Windows Server 2025 Active Directory environment built from scratch to practise real IT support and SOC analyst work. It models a fictional company, **Fakelab Inc.**, designed around Microsoft's tiered administration model and mapped to current NIST guidance, with the entire company provisioned by an idempotent PowerShell script.
+A Windows Server 2025 Active Directory environment built from scratch to practise real IT support work. It models a fictional company, **Fakelab Inc.**, designed around Microsoft's tiered administration model and mapped to current NIST guidance, with the entire company provisioned by an idempotent PowerShell script.
 
 > **Note:** This is a closed practice lab. Company, staff and credentials are fictional. Lab passwords appear as placeholders below, they are deliberately weak and shared because nothing real is at stake; the modernisation roadmap explains exactly why production must differ.
 
@@ -44,13 +44,19 @@ The OU structure is organised around **administration and policy**, not the org 
 
 The two axes are kept apart on purpose. IT is the only department subdivided (Helpdesk / Infrastructure / Security), because it's the only one needing distinct delegation. Nesting is kept to 3-4 levels, per best practice. Group Policy objects are linked **only to their own tier**, the workstation-hardening policy never touches servers, demonstrating policy kept within tier boundaries.
 
+The tiered admin tree in the directory: separate Tier 0, Tier 1 and Tier 2 OUs, here with Tier 0 expanded to show its Accounts, Devices and Groups.
+
+<div align="center">
+<img src="ad-tiered-ou.png" alt="Admin tree with Tier 0, Tier 1 and Tier 2 organizational units" width="820">
+</div>
+
 ## Built with PowerShell
 
 The whole company is provisioned by `Build-TieredCompanyLab.ps1`, which:
 
 - is **idempotent**, checks before creating every object, so it's safe to re-run
 - builds the tiered admin tree, OUs, ~35 staff, paired IT admin accounts, security groups and GPO scaffolding
-- encodes the tier-to-role mapping in code (helpdesk → Tier 2; infra, network and SOC → Tier 1; identity/domain admin → Tier 0)
+- encodes the tier-to-role mapping in code (helpdesk → Tier 2; infra and network → Tier 1; identity/domain admin → Tier 0)
 - prints a **teardown one-liner**, so the environment is fully removable
 
 The design decisions live in the code, not just the docs, which is the part of this project I'm proudest of.
@@ -112,9 +118,7 @@ I tried again and it still failed, except now the drive showed but would not ope
 
 The thing I took from it is a rule I can use on a real queue: group membership changes need the user to log off and back on (for a computer's group membership it is a reboot instead), while most other AD changes, password resets, attribute edits, a new account, apply straight away without one. The "I was added to the group but still can't get in" ticket is a common one, and the answer is usually a stale logon session rather than a permission that did not apply.
 
-## SOC analyst practice
-
-The directory is structured to support junior SOC work: watching logon events (who logged in, when, from which machine), spotting a Tier 0/Tier 1 admin account being used on a workstation (a classic warning sign), investigating repeated failed logons, and building an incident timeline from collected logs. *(Endpoint logging via Sysmon into Elastic / Security Onion is the monitoring layer this design is built to feed.)*
+One honest note on that demo: I dropped the plain `romel` account into Administrators to move quickly, which is the convenient thing rather than the correct one. The tiered design above is the right pattern: everyday work uses a normal account with no special powers, and administrative work uses a separate `adm-` account placed in the matching tier, so a high-privilege credential never rides on an ordinary user's login.
 
 ## Modernisation roadmap
 
