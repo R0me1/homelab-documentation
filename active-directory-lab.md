@@ -72,6 +72,46 @@ A dedicated Tier 1 member server holds the company's shares under `C:\Shares`, w
 
 A recurring real lesson baked into the lab: a domain member must point DNS at the domain controller, and most "new fault" connectivity issues trace back to DNS or a firewall rule that doesn't yet cover a newly added host.
 
+## Proof of work: two tasks run in the lab
+
+The scenarios above are the practice; here are two of them run end to end, with screenshots. The staff names and the domain are the lab's fictional ones.
+
+### Password reset
+
+The most common ticket there is. I reset the password for a user in the Executive OU and ticked "User must change password at next logon," so the temporary password is single use and they set their own on first sign-in. The same dialog shows the account lockout status, which is the other half of the usual "I can't log in" call.
+
+<div align="center">
+<img src="ad-password-reset.png" alt="Resetting a user password in Active Directory Users and Computers" width="720">
+</div>
+
+### New starter, then a share they could not open
+
+I created an account for myself in the Helpdesk OU (IT > Helpdesk), the way a new starter would be set up.
+
+<div align="center">
+<img src="ad-new-user.png" alt="Creating a new user in the IT Helpdesk OU" width="760">
+</div>
+
+With the account made, I mapped a department drive to the all-staff share and tried to open it. It threw "Windows cannot access," denied.
+
+<div align="center">
+<img src="ad-share-access-denied.png" alt="Windows cannot access network share, permission denied" width="520">
+</div>
+
+First thing I checked was group membership, and I had not added the new account to AllStaff, the group the all-staff share is permissioned to. So I added it.
+
+<div align="center">
+<img src="ad-allstaff-group.png" alt="The account now a member of the AllStaff group" width="760">
+</div>
+
+I tried again and it still failed, except now the drive showed but would not open, which threw me. I worked through it and found the cause: a Windows logon token only picks up group changes at a fresh sign-in, so the session was still running with the membership it had at logon, before AllStaff. Signing the account out and back in rebuilt the token with AllStaff in it, and the share opened.
+
+<div align="center">
+<img src="ad-share-mapped.png" alt="The all-staff share open as the mapped Z: drive" width="820">
+</div>
+
+The thing I took from it is a rule I can use on a real queue: group membership changes need the user to log off and back on (for a computer's group membership it is a reboot instead), while most other AD changes, password resets, attribute edits, a new account, apply straight away without one. The "I was added to the group but still can't get in" ticket is a common one, and the answer is usually a stale logon session rather than a permission that did not apply.
+
 ## SOC analyst practice
 
 The directory is structured to support junior SOC work: watching logon events (who logged in, when, from which machine), spotting a Tier 0/Tier 1 admin account being used on a workstation (a classic warning sign), investigating repeated failed logons, and building an incident timeline from collected logs. *(Endpoint logging via Sysmon into Elastic / Security Onion is the monitoring layer this design is built to feed.)*
